@@ -6,6 +6,7 @@ import os
 from os import path
 import csv
 from itertools import chain
+from datetime import date
 
 class COCOmgmt(object):
     '''
@@ -340,6 +341,7 @@ class COCOmgmt(object):
         new_dic = self.coco_dic.copy()
 
         new_dic['categories'] = adjust
+        new_dic['info']['date_created'] = str(date.today())
 
         # Export du dict en .json
         if output_path is not None:
@@ -409,6 +411,7 @@ class COCOmgmt(object):
 
         # Remplacement des categories
         new_dic['categories'] = categories
+        new_dic['info']['date_created'] = str(date.today())
 
         # Remplacement des ids des annotations
         new_ann = []
