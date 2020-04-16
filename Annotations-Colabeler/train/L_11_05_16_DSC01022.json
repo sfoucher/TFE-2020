@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\train\\L_11_05_16_DSC01022.JPG","outputs":{"object":[{"name":"hippopotamus","bndbox":{"xmin":1557,"ymin":1418,"xmax":1665,"ymax":1485}},{"name":"hippopotamus","bndbox":{"xmin":867,"ymin":1298,"xmax":993,"ymax":1350}}]},"time_labeled":1585816695781,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
