@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\val\\S_11_05_16_DSC01875.JPG","outputs":{"object":[{"name":"buffalo","bndbox":{"xmin":4014,"ymin":885,"xmax":4080,"ymax":976}}]},"time_labeled":1585919663450,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
