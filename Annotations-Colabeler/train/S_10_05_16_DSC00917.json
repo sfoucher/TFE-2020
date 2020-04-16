@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\train\\S_10_05_16_DSC00917.JPG","outputs":{"object":[{"name":"buffalo","bndbox":{"xmin":5457,"ymin":825,"xmax":5542,"ymax":870}},{"name":"buffalo","bndbox":{"xmin":5400,"ymin":872,"xmax":5475,"ymax":959}}]},"time_labeled":1585907730200,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
