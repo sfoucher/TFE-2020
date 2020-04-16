@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\train\\L_11_05_16_DSC01231.JPG","outputs":{"object":[{"name":"warthog","bndbox":{"xmin":2933,"ymin":3688,"xmax":2993,"ymax":3726}}]},"time_labeled":1585822024585,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
