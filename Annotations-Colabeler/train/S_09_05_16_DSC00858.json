@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\train\\S_09_05_16_DSC00858.JPG","outputs":{"object":[{"name":"kob","bndbox":{"xmin":5215,"ymin":3120,"xmax":5267,"ymax":3157}}]},"time_labeled":1585841847945,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
