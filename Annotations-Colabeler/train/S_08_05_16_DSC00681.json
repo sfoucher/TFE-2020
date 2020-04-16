@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\train\\S_08_05_16_DSC00681.JPG","outputs":{"object":[{"name":"topi","bndbox":{"xmin":2488,"ymin":1970,"xmax":2548,"ymax":2020}}]},"time_labeled":1585833512985,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}

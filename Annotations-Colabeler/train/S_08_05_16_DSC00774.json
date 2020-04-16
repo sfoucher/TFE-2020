@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\train\\S_08_05_16_DSC00774.JPG","outputs":{"object":[{"name":"waterbuck","bndbox":{"xmin":4125,"ymin":1486,"xmax":4166,"ymax":1535}}]},"time_labeled":1585833791838,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
