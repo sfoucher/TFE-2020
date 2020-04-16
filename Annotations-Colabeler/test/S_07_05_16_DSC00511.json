@@ -1,0 +1,1 @@
+{"path":"D:\\ADelplanque\\Object Detection Model\\M2\\data\\test\\S_07_05_16_DSC00511.JPG","outputs":{"object":[{"name":"kob","bndbox":{"xmin":4901,"ymin":3558,"xmax":4925,"ymax":3607}},{"name":"kob","bndbox":{"xmin":4580,"ymin":3729,"xmax":4607,"ymax":3755}}]},"time_labeled":1585930528753,"labeled":true,"size":{"width":6000,"height":4000,"depth":3}}
