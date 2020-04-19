@@ -444,7 +444,7 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
 
     # Initialisation de "all_points" et "all_results"
     all_points = [['filename','count','locations']]
-    all_results = [['filename','boxes','labels','data']]
+    all_results = [['filename','boxes','labels','HxW']]
 
     # Temps initial
     t_i = time.time()
@@ -482,7 +482,9 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
         
         for b in range(len(results)):
             if results[b][1]:
-                all_results.append([results[b][3],results[b][1],results[b][2],results[b][0]])
+                h = np.shape(results[b][0])[0]
+                w = np.shape(results[b][0])[1]
+                all_results.append([results[b][3],results[b][1],results[b][2],[h,w]])
 
         if i % pr_rate == 0:
             print('Image [{:<3}/{:<3}] done.'.format(i, len(coco_dic['images'])))
@@ -520,7 +522,7 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
 
         # Export du fichier d'annotations adapté aux nouvelles sous-images
         if export_ann is True:
-            file_name = 'coco_patches.json'
+            file_name = 'coco_subframes.json'
             output_f = os.path.join(output_folder, file_name)
 
             # Initialisations
@@ -534,8 +536,8 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
                 id_img += 1
 
                 # Dictionnaire de l'image i
-                h = np.shape(all_results[i][3])[0]
-                w = np.shape(all_results[i][3])[1]
+                h = all_results[i][3][0]
+                w = all_results[i][3][1]
 
                 dico_img = {
                     "license": 1,
