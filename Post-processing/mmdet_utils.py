@@ -7,12 +7,6 @@ from os.path import exists, join, basename, splitext
 import json
 import numpy as np
 from sklearn.metrics import confusion_matrix, classification_report
-from dataset import CustomDataset
-import time
-import datetime
-from datetime import date
-import torch
-import torchvision
 
 def display(predictions, img_path, coco_path, legend=True, title=True, score_thresh=None):
     '''
