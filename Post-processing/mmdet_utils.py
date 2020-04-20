@@ -452,7 +452,7 @@ def report(match, coco_path):
 
     i = 0
     classes = ['Background']
-    for lab in labels:
+    for lab in labels[1:]:
         if categories[i]['id']==lab:
             classes.append(categories[i]['name'])
 
