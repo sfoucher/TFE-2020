@@ -7,6 +7,12 @@ from os.path import exists, join, basename, splitext
 import json
 import numpy as np
 from sklearn.metrics import confusion_matrix, classification_report
+from dataset import CustomDataset
+import time
+import datetime
+from datetime import date
+import torch
+import torchvision
 
 def display(predictions, img_path, coco_path, legend=True, title=True, score_thresh=None):
     '''
@@ -239,7 +245,7 @@ def match(predictions, img_path, coco_path, IoU_tresh, score_thresh=None):
     gt_labels = []
     for ann in ann_dic:
         if ann['image_id']==id_img:
-            box = ann['boxes']
+            box = ann['bbox']
             boxes = [box[0],box[1],box[0]+box[2],box[1]+box[3]]
             gt_boxes.append(boxes)
             gt_labels.append(ann['category_id'])
