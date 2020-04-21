@@ -102,9 +102,6 @@ class subframes(object):
         results = []
 
         # Prétraitements de l'image
-        # tensor_to_PIL = torchvision.transforms.ToPILImage(mode='RGB')
-        # img = tensor_to_PIL(self.image)
-        
         image_np = np.array(self.image)
         boxes = self.target['boxes']
         labels = self.target['labels']
