@@ -118,7 +118,8 @@ class COCOmgmt(object):
 
         Returns
         -------
-        None
+        2D list
+            Plot data.
 
         '''
 
@@ -166,6 +167,13 @@ class COCOmgmt(object):
 
         x_ticks = ax.set_xticks(range(1,len(categories)+1))
         ticks = ax.set_xticklabels(names)
+        
+        results = [['id','name','count']]
+        res = [[key,value] for (key,value) in sorted(cat_counter.items())]
+        for row in res:
+            for line in n:
+                if row[0]==line[0]:
+                    results.append([row[0],line[1],row[1]])
 
         # enregistrements
 
@@ -181,13 +189,6 @@ class COCOmgmt(object):
             plt.savefig(png_file)
 
             # Sauvegarde des résultats numériques
-            results = [['id','name','count']]
-            res = [[key,value] for (key,value) in sorted(cat_counter.items())]
-            for row in res:
-                for line in n:
-                    if row[0]==line[0]:
-                        results.append([row[0],line[1],row[1]])
-
             csv_file = os.path.join(save_path,'categories_dist.csv')
 
             with open(csv_file,'w', newline="") as f:
@@ -199,6 +200,8 @@ class COCOmgmt(object):
                 print(' ')
             else:
                 print('An error occurs, please verify statut of \'{}\'.'.format(save_path))
+                
+        return results
 
     def displayanndist(self, x_lab=None, y_lab=None, title=None, output_path=None):
         '''
