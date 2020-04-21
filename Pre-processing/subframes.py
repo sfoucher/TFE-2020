@@ -29,7 +29,8 @@ class subframes(object):
         PIL image.
     target : dict
         Must have 'boxes' and 'labels' keys at least.
-        'boxes' must be a list in the 'coco' bounding box format : [[xmin, ymin, width, height], ...]
+        'boxes' must be a list in the 'coco' bounding box format :
+        [[xmin, ymin, width, height], ...]
     width : int
         width of the sub-frames
     height : int
@@ -149,7 +150,10 @@ class subframes(object):
                         w0 += self.width
                         w1 += self.width
 
-                transf = Compose([Crop(w0,h0,w1,h1,p=1.0)], bbox_params=BboxParams(format='coco', label_fields=['labels']))
+                transf = Compose([Crop(w0,h0,w1,h1,p=1.0)], 
+                                 bbox_params=BboxParams(format='coco',
+                                                        min_visibility=0.25,
+                                                        label_fields=['labels']))
                 augmented  = transf(**annotations)
                 sub_name = self.img_name.rsplit('.')[0] + "_S" + str(sub) + ".JPG"
                 results.append([augmented['image'],augmented['bboxes'],augmented['labels'],sub_name])
