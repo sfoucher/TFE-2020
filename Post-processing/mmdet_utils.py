@@ -370,7 +370,7 @@ def match(predictions, img_path, coco_path, IoU_tresh, score_thresh=None):
 
     return matching    
 
-def matrix(match):
+def matrix(match, class_names):
     '''
     Function used to create a confusion matrix, based
     on 2D matching numpy array betwen ground-truth and
@@ -383,11 +383,15 @@ def matrix(match):
     match : np.array
         2D numpy array, with ground-truth labels in
         column 1 and predictions labels in column 2.
+    class_names : list of str
+        List of labels names, including 'Background' string
+        in first position.
+        Warning : Order need to be respected!
     
     Returns
     -------
-    2D np.array
-        Confusion matrix.
+    Dict
+        Confusion matrix with labels name.
     
     Author
     ------
@@ -400,9 +404,23 @@ def matrix(match):
     labels = list(set(np.concatenate((truth,predicted),axis=0)))
     labels = [int(lab) for lab in labels]
 
-    conf_matrix = confusion_matrix(truth, predicted, labels=labels)
-
-    return conf_matrix
+    matrix = confusion_matrix(truth, predicted, labels=labels)
+    
+    print(matrix)
+    
+    i = 0
+    j = 0
+    confusion_matrix = {}
+    for name in class_names:
+        dic = {name : {}}
+        for name_bis in class_names:
+            dic[name].update({name_bis : float(matrix[i][j])})
+            confusion_matrix.update(dic)
+            j += 1
+        j = 0
+        i += 1
+    
+    return confusion_matrix
 
 def report(match, coco_path):
     '''
