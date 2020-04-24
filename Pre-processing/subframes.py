@@ -373,7 +373,7 @@ class subframes(object):
                 sub_name =  results[line][3]
                 subframe.save(os.path.join(output_path, sub_name))
 
-def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rate=50, object_only=True, export_ann=True):
+def subexport(img_root, ann_root, width, height, output_folder, ann_type, overlap=False, pr_rate=50, object_only=True, export_ann=True):
     '''
     Function that exports sub-frames created on the basis of 
     images loaded by a dataloader, and their associated new 
@@ -406,6 +406,10 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
         - If 'point' a CSV file named 'gt.csv' is created. See :
         https://github.com/javiribera/locating-objects-without-bboxes 
         - If 'both', the two above are created.
+    
+    overlap : bool, optional
+        Set to True to get an overlap of 50% between 
+        2 sub-frames (default: False)
 
     pr_rate : int, optional
         Console print rate of image processing progress.
@@ -429,6 +433,10 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
     --------
     list or dict
         Specific to the annotation type. if 'both', dict.
+    
+    Author
+    ------
+    Alexandre Delplanque
     
     '''
 
@@ -481,7 +489,7 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
         img_name = coco_dic['images'][img_id-1]['file_name']
         # Obtention des sub-frames
         sub_frames = subframes(img_name, image, target, width, height)
-        results = sub_frames.getlist()
+        results = sub_frames.getlist(overlap=overlap)
         # Sauvegarde
         sub_frames.save(results, output_path=output_folder, object_only=object_only)
         # Obtention du fichier de points
@@ -491,8 +499,15 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
         for o in range(len(points)):
             all_points.append(points[o])
         
-        for b in range(len(results)):
-            if results[b][1]:
+        if object_only is True:
+            for b in range(len(results)):
+                if results[b][1]:
+                    h = np.shape(results[b][0])[0]
+                    w = np.shape(results[b][0])[1]
+                    all_results.append([results[b][3],results[b][1],results[b][2],[h,w]])
+
+        elif object_only is not True:
+            for b in range(len(results)):
                 h = np.shape(results[b][0])[0]
                 w = np.shape(results[b][0])[1]
                 all_results.append([results[b][3],results[b][1],results[b][2],[h,w]])
@@ -565,43 +580,45 @@ def subexport(img_root, ann_root, width, height, output_folder, ann_type, pr_rat
                 images.append(dico_img)
 
                 # Bounding boxes
-                bndboxes = all_results[i][1]
-
-                # Dictionnaire des annotations de l'image i
-                for b in range(len(bndboxes)):
-
-                    id_ann += 1
-
-                    # Bounding box
-                    bndbox = bndboxes[b]
+                if all_results[i][1]:
                     
-                    # Conversion de la bounding box
-                    x_min = int(np.round(bndbox[0]))
-                    y_min = int(np.round(bndbox[1]))
-                    box_w = int(np.round(bndbox[2]))
-                    box_h = int(np.round(bndbox[3]))
+                    bndboxes = all_results[i][1]
 
-                    coco_box = [x_min,y_min,box_w,box_h]
+                    # Dictionnaire des annotations de l'image i
+                    for b in range(len(bndboxes)):
 
-                    # Calcul de l'aire de la bounding box
-                    area = box_w*box_h
+                        id_ann += 1
 
-                    # Label
-                    label_id = all_results[i][2][b]
+                        # Bounding box
+                        bndbox = bndboxes[b]
+                        
+                        # Conversion de la bounding box
+                        x_min = int(np.round(bndbox[0]))
+                        y_min = int(np.round(bndbox[1]))
+                        box_w = int(np.round(bndbox[2]))
+                        box_h = int(np.round(bndbox[3]))
 
-                    # Ajout dans le dictionnaire partiel
-                    dico_ann = {
-                            "segmentation": [[]],
-                            "area": area,
-                            "iscrowd": 0,
-                            "image_id": id_img,
-                            "bbox": coco_box,
-                            "category_id": label_id,
-                            "id": id_ann
-                    }
+                        coco_box = [x_min,y_min,box_w,box_h]
 
-                    # Concaténation du dictionnaire avec les autres annotations
-                    annotations.append(dico_ann)
+                        # Calcul de l'aire de la bounding box
+                        area = box_w*box_h
+
+                        # Label
+                        label_id = all_results[i][2][b]
+
+                        # Ajout dans le dictionnaire partiel
+                        dico_ann = {
+                                "segmentation": [[]],
+                                "area": area,
+                                "iscrowd": 0,
+                                "image_id": id_img,
+                                "bbox": coco_box,
+                                "category_id": label_id,
+                                "id": id_ann
+                        }
+
+                        # Concaténation du dictionnaire avec les autres annotations
+                        annotations.append(dico_ann)
             
             # Changement de date dans la clé "info" du coco_dic
             coco_dic['info']['date_created'] = str(date.today())

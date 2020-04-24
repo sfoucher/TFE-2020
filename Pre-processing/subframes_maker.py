@@ -16,7 +16,18 @@ width = args.width
 height = args.height
 # Type d'annotation en output
 ann_type = args.ann_type
+# Overlap
+overlap = args.overlap
+# Uniquement objets ?
+object_only = args.obj_only
 #----------------------------------------------------------------  
 
 # Export des sub-frames et nouvelles annotations
-results = subexport(img_root, ann_root, width, height, out_dir, ann_type)
+results = subexport(img_root=img_root,
+                    ann_root=ann_root, 
+                    width=width, 
+                    height=height, 
+                    output_folder=out_dir, 
+                    ann_type=ann_type, 
+                    overlap=overlap, 
+                    object_only=object_only)
