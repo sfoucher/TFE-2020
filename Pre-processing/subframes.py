@@ -38,7 +38,7 @@ class subframes(object):
     
     Methods
     --------
-    getlist()
+    getlist(overlap=True)
         Produces a results list containing, for each row :
         the sub-frame (3D list, dtype=uint8), the bboxes (2D list),
         the labels (1D list) and the filename (str).
@@ -83,78 +83,81 @@ class subframes(object):
         self.img_height = image.size[1]
 
         # Subdivision
-        self.x_sub = int(1+(self.img_width - (self.img_width % width)) / width)
-        self.y_sub = int(1+(self.img_height - (self.img_height % height)) / height)
+        self.x_sub = 1 + int((self.img_width - (self.img_width % width)) / width)
+        self.y_sub = 1 + int((self.img_height - (self.img_height % height)) / height)
 
-    def getlist(self):
+    def getlist(self, overlap=False):
         '''
         Produces a results list containing, for each row :
         the sub-frame (3D list, dtype=uint8), the bboxes (2D list),
         the labels (1D list) and the filename (str).
         Parameters
         -----------
-        None
+        overlap : bool, optional
+            Set to True to get an overlap of 50% between 
+            2 sub-frames (default: False)
         Returns
         --------
         list
         '''
+        height = self.height
+        width = self.width
+        img_height = self.img_height
+        img_width = self.img_width
+
         # Initialisation de la variable des résultats
         results = []
 
-        # Prétraitements de l'image
+        # Prétraitements de l'image      
         image_np = np.array(self.image)
         boxes = self.target['boxes']
         labels = self.target['labels']
         annotations = {'image':image_np,'bboxes':boxes,'labels':labels}
 
-        # Crop de l'image
-        w0 = 0
-        h0 = 0
-        w1 = 0
-        h1 = 0
+        # List des crop de l'image
+        if overlap is True:
+            overlap = 0.5
+            y_sub = int(np.round(height*overlap))
+            x_sub = int(np.round(width*overlap))
+            rg_ymax = img_height-y_sub
+            rg_xmax = img_width-x_sub
+        else:
+            y_sub = height
+            x_sub = width
+            rg_ymax = img_height
+            rg_xmax = img_width
+
+        crops = []
+
+        for y in range(0, rg_ymax, y_sub):
+            if  y+height <= img_height:
+                for x in range(0, rg_xmax, x_sub):
+                    if  x+width <= img_width:
+                        xmax, ymax = x+width, y+height
+                    elif x+img_width%width <= img_width:
+                        xmax, ymax = x+img_width%width, y+height
+
+                    crops.append([x, y, xmax, ymax])
+            
+            elif  y+img_height%height <= img_height:
+                for x in range(0, rg_xmax, x_sub):
+                    if  x+width <= img_width:
+                        xmax, ymax = x+width, y+img_height%height
+                    elif x+img_width%width <= img_width:
+                        xmax, ymax = x+img_width%width, y+img_height%height
+
+                    crops.append([x, y, xmax, ymax])
+
         sub = 0
-
-        for y in range(self.y_sub):
-
-            w0 = 0
-            w1 = self.width
-
-            if self.img_height % self.height != 0 and y == self.y_sub-1:
-                h0 += self.height
-                h1 += (self.img_height % self.height)
-            else:
-                if y == self.y_sub-1:
-                    continue
-                if y == 0:
-                    h0 = 0
-                    h1 = self.height
-                else:
-                    h0 += self.height
-                    h1 += self.height
-
-            for x in range(self.x_sub):
-                
-                if self.img_width % self.width != 0 and x == self.x_sub-1:
-                    w0 += self.width
-                    w1 += (self.img_width % self.width)
-                else:
-                    if x == self.x_sub-1:
-                        continue
-                    if x == 0:
-                        w0 = 0
-                        w1 = self.width
-                    else:
-                        w0 += self.width
-                        w1 += self.width
-
-                transf = Compose([Crop(w0,h0,w1,h1,p=1.0)], 
-                                 bbox_params=BboxParams(format='coco',
-                                                        min_visibility=0.25,
+        for xmin, ymin, xmax, ymax in crops:
+            transf = Compose([Crop(xmin, ymin, xmax, ymax, p=1.0)], 
+                                bbox_params=BboxParams(format='coco',
+                                                        min_visibility=0.25, 
                                                         label_fields=['labels']))
-                augmented  = transf(**annotations)
-                sub_name = self.img_name.rsplit('.')[0] + "_S" + str(sub) + ".JPG"
-                results.append([augmented['image'],augmented['bboxes'],augmented['labels'],sub_name])
-                sub += 1
+            augmented  = transf(**annotations)
+            sub_name = self.img_name.rsplit('.')[0] + "_S" + str(sub) + ".JPG"
+            results.append([augmented['image'],augmented['bboxes'],augmented['labels'],sub_name])
+            sub += 1
 
         return results
 
@@ -170,17 +173,24 @@ class subframes(object):
         matplotlib plot
         '''
 
+        if len(results) > (self.x_sub*self.y_sub):
+            x_sub = 2*self.x_sub - 2
+            y_sub = 2*self.y_sub - 2
+        else:
+            x_sub = self.x_sub
+            y_sub = self.y_sub
+
         plt.figure(1)
         plt.suptitle(self.img_name)
         sub = 1
         for line in range(len(results)):
 
             if self.img_width % self.width != 0:
-                n_col = self.x_sub
-                n_row = self.y_sub
+                n_col = x_sub
+                n_row = y_sub
             else:
-                n_col = self.x_sub - 1
-                n_row = self.y_sub - 1
+                n_col = x_sub - 1
+                n_row = y_sub - 1
 
             plt.subplot(n_row, n_col, sub, xlim=(0,self.width), ylim=(self.height,0))
             plt.imshow(Image.fromarray(results[line][0]))
@@ -191,11 +201,11 @@ class subframes(object):
             text_x = np.shape(results[line][0])[1]
             text_y = np.shape(results[line][0])[0]
 
-            # Facteur de proportion du fontsize, dépendant du crop
+            # Facteur de proportionalité du fontsize, dépendant du crop
             if self.width > self.height:
-                f = self.height
+                f = self.height*(self.y_sub/y_sub)
             else:
-                f = self.width
+                f = self.width*(self.x_sub/x_sub)
 
             plt.text(0.5*text_x, 0.5*text_y, 
                     "S"+str(line),
